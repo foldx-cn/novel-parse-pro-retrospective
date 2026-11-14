@@ -1,10 +1,31 @@
-> 本仓库保留《小说解析》项目复盘文档，并附带可复用的客户端/界面源码包；不包含站点抓取实现，也不提供 APK 下载。
+> 本仓库保留《小说解析》项目复盘文档，并附带可复用的客户端/界面源码包、1.6.0 下载中心模块与源码归档；不包含站点抓取实现。APK 通过下方下载地址获取。
 
 # 小说解析 1.0 → 1.5.1：把网页装进 App，然后决定停掉它
 
 ![封面](https://img.foldx.cn/i/2026/11/14/xh3ka0.jpg)
 
-> 项目已停止维护。本文只讨论工程实现、产品取舍和停更原因，不提供抓取受版权保护内容或绕过登录、付费墙的方法。项目运行期间也只处理公开可访问章节，不绕过任何登录或付费限制。
+> 主线已停止维护；2026-11-14 追加的 1.6.0 是归档后的下载中心补丁。本文只讨论工程实现、产品取舍和停更原因，不提供抓取受版权保护内容或绕过登录、付费墙的方法。项目运行期间也只处理公开可访问章节，不绕过任何登录或付费限制。
+
+## 2026-11-14 追加：1.6.0 下载中心
+
+项目主线停在 1.5.1，这个仓库原本是复盘和归档。后来我接受了一个新需求：参考 [CYQawa/YunX](https://github.com/CYQawa/YunX)，在**不改现有设计语言**的前提下，给小说解析补一个独立的下载工具箱。它不是把“小说解析”的抓取主线重新拉起来，而是在原来的 Java WebView + Chaquopy Python 壳里，加了第六个「下载」页。
+
+![小说解析 1.6.0 下载页](https://img.foldx.cn/i/2026/11/14/novel-download-center.png)
+
+新增的东西：
+
+- **下载管理**：公开直链、Range 分片（4 MB / 4 线程）、暂停继续、断点分片记录、`tasks.json` 任务持久化、失败恢复、本机文件打开；
+- **链接识别**：识别夸克、UC、迅雷、百度、139、123、115、光鸭、蓝奏云 / 优享版，以及抖音、小红书、快手、微博、AcFun、B 站、Pixiv；显示平台、类型和提取码，网盘分享返回 `downloadable:false`，避免误下 HTML；
+- **公开媒体探测**：抓取公开页面的 `og:title`、`og:image`、`og:video`，以及 `<video>` / `<source>` / `<img>` / 可下载链接，返回标题、封面和媒体项；
+- **多平台登录**：Android 原生 WebView 登录遮罩，登录完成后用 `CookieManager` 取当前 URL 的 Cookie，经 JS 回调保存到本机；账号列表只返回 `hasCookie`，不返回 Cookie 本体。
+
+底栏顺序从五个变成 `书架 → 解析 → 下载 → 设置 → 反馈 → 关于`，原有五页、变量、卡片、阅读器都没有换。排版有调整，设计风格沿用原来的蓝白卡片和浅色背景。
+
+**边界要说清楚：**这一版没有实现夸克、UC、百度等平台的私有文件列表接口，也没有绕过登录、付费墙或 DRM。当前能实际下载的是公开直链和公开媒体；网盘链接先做识别、提取码与登录入口。平台私有接口需要跟登录态、风控和账号权限打交道，不能拿“公开页面抓取”冒充。
+
+**1.6.0 下载**：[novelparse-1.6.0.apk](https://dl.foldx.cn/novelparse-1.6.0.apk)（24 MB，MD5 `269ad0f69663e8eb9c16ffe3065f6979`）  
+**下载中心源码归档**：[novel-parse-pro-download-center.tar.gz](https://github.com/foldx-cn/novel-parse-pro-retrospective/raw/main/novel-parse-pro-download-center.tar.gz)  
+**博客文章**：[小说解析 1.6.0：在原来的壳里加一个下载中心，特别感谢 YunX](https://blog.foldx.cn/archives/novel-parse-1-6-download-center)
 
 ## 起因
 
@@ -102,6 +123,7 @@
 本仓库现在附带一个**可复用的客户端/界面源码包**（不是完整抓取器）：
 
 - [novel-parse-pro-ui-source.tar.gz](https://github.com/foldx-cn/novel-parse-pro-retrospective/raw/main/novel-parse-pro-ui-source.tar.gz)
+- [novel-parse-pro-download-center.tar.gz](https://github.com/foldx-cn/novel-parse-pro-retrospective/raw/main/novel-parse-pro-download-center.tar.gz)（1.6.0 下载中心模块、完整 WebView 页面、NOTICE-YunX 与集成说明）
 - 包含：Android 单 Activity 壳、WebView 界面、资源、Gradle 配置与架构说明
 - 不包含：站点目录/正文适配、字体映射、搜索/抓取、登录/Cookie/付费墙处理、签名 keystore 与 APK
 - 许可证：MIT（仅适用于项目作者原创的客户端壳、界面与文档）
@@ -110,13 +132,20 @@
 
 ## 项目归档与 GitHub
 
-这个项目已经停止维护。GitHub 上保留的是**复盘文档和架构说明**，不包含抓取实现，也不提供 APK 下载：
+主线已停止维护。GitHub 上保留的是**复盘文档、架构说明和 1.6.0 下载中心源码**，不包含抓取实现；APK 只提供文首的 1.6.0 归档版本：
 
 **GitHub:** https://github.com/foldx-cn/novel-parse-pro-retrospective
 
-如果你只是想要一个本地阅读器，未来也许可以做一个不依赖外部站点的版本；但“小说解析”这个名字和这套入口，就到这里了。
+如果你只是想要一个本地阅读器，未来也许可以做一个不依赖外部站点的版本；“小说解析”的抓取主线就到这里了，1.6.0 只是把下载工具箱留在原来的壳里。
 
 ---
 
 *作者：Sienna Fuca · 2026-11-14*
 *标签：项目复盘 / Android / Python / 小说解析 / 停止维护*
+
+
+## 特别感谢
+
+本项目的下载管理、链接识别、公开媒体探测和多平台登录入口，参考自 [CYQawa/YunX](https://github.com/CYQawa/YunX)。YunX 以 AGPL-3.0 开源，作者把网盘、视频、图集、下载、登录这些链路整理得很完整；没有这份参考，这次改版不会这么快落地。特别感谢 CYQawa 的分享。
+
+本文及新增代码仅用于学习与个人工具，不绕过登录、付费墙或 DRM；请遵守各平台服务条款和内容版权。
